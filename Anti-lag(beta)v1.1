@@ -1,0 +1,32 @@
+local RunService = game:GetService("RunService")
+local Lighting = game:GetService("Lighting")
+
+RunService:SetThrottleFramerateEnabled(true)
+pcall(function() if setfpscap then setfpscap(60) end end)
+
+-- Remove sombras e reflexos uma vez
+pcall(function()
+    Lighting.GlobalShadows = false
+    for _, v in ipairs(game:GetDescendants()) do
+        if v:IsA("BasePart") then
+            v.Reflectance = 0
+        end
+    end
+end)
+
+local function otimizar()
+    for _, v in ipairs(game:GetDescendants()) do
+        if v:IsA("ParticleEmitter") or v:IsA("Trail") or v:IsA("Fire") or v:IsA("Smoke") then
+            pcall(function() v.Enabled = false end)
+        elseif v:IsA("Sound") and not v.IsPlaying then
+            pcall(function() v:Destroy() end)
+        elseif v:IsA("LocalScript") and not v.Enabled then
+            pcall(function() v:Destroy() end)
+        end
+    end
+    collectgarbage("collect")
+end
+
+while task.wait(3) do
+    otimizar()
+end
